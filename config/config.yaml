@@ -1,0 +1,11 @@
+boat_param:
+    longitudinal_drag: 0.1
+    lateral_drag: 0.1
+    longitudinal_noise_var: 0.001
+    lateral_noise_var: 0.001
+    max_thrust: 2
+    max_rudder_angle: 90      # in degree
+    thrust_input_type: 0      # 0=step, 1=sin
+    rudder_input_type: 0
+
+
