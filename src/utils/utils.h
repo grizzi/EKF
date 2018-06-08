@@ -17,4 +17,19 @@ T clamp(T min, T value, T max)
     return value;
 
 }
+
+class NormalDistribution
+{
+    std::default_random_engine generator_;
+    std::normal_distribution<double> dist_;
+    double sample_;
+
+    NormalDistribution(double &mean, double &var)
+    {
+        dist_ = std::normal_distribution<double>(mean, var);
+    }
+
+    double draw(){ return dist_(generator_)};
+
+};
 #endif //SIMULATOR_UTILS_H

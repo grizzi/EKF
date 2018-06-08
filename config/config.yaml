@@ -7,5 +7,7 @@ boat_param:
     max_rudder_angle: 90      # in degree
     thrust_input_type: 0      # 0=step, 1=sin
     rudder_input_type: 0
+sim_param:
+    Ts: 0.01
 
 
