@@ -9,5 +9,15 @@ boat_param:
     rudder_input_type: 0
 sim_param:
     Ts: 0.01
+meas_param:
+    sigma_a: 0.001
+    sigma_b: 0.001
+    sigma_c: 0.001
+    sigma_g: 0.001
+    sigma_n: 0.001
+    drift_stdev: 0.001
+    pos_a: [10.0,10.0]
+    pos_b: [-10.0, 10.0]
+    pos_c: [10.0, -10.0]
 
 

@@ -2,7 +2,13 @@
     <node pkg="ekf" type="boat_talker" name="boat_talker" output="screen">
         <rosparam command="load" file="$(find ekf)/config/config.yaml" />
     </node>
+
     <node pkg="ekf" type="visualize_boat" name="visualize_boat" output="screen"/>
+
+    <node pkg="ekf" type="meas_talker" name="meas_talker" output="screen">
+        <rosparam command="load" file="$(find ekf)/config/config.yaml" />
+    </node>
+
     <node pkg="rviz" type="rviz" name="$(anon rviz)" />
     <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui"/>
 </launch>

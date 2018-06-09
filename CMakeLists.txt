@@ -107,7 +107,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ekf
-  CATKIN_DEPENDS roscpp rospy geometry_msgs message_runtime visualization_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs message_runtime visualization_msgs
 #  DEPENDS system_lib
 )
 
@@ -120,8 +120,8 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
-    src/simulator
     src/utils
+    src/simulator
 )
 
 ## Declare a C++ library
@@ -139,13 +139,25 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/ekf_node.cpp)
 
-add_executable(boat_talker src/boat_talker.cpp
+add_executable(boat_talker src/utils/utils.cpp
+                           src/boat_talker.cpp
                            src/simulator/dynamics.cpp
-                           src/simulator/BoatModel.cpp)
+                           src/simulator/BoatModel.cpp
+                           )
+
 target_link_libraries(boat_talker ${catkin_LIBRARIES})
 
 add_executable(visualize_boat src/visualize_boat.cpp)
 target_link_libraries(visualize_boat ${catkin_LIBRARIES})
+
+add_executable(meas_talker src/meas_talker.cpp
+        src/utils/utils.cpp
+        src/simulator/dynamics.cpp
+        src/simulator/BoatModel.cpp)
+                           #src/simulator/BoatMeasurements.cpp)
+target_link_libraries(meas_talker ${catkin_LIBRARIES})
+
+
 
 
 ## Rename C++ executable without prefix

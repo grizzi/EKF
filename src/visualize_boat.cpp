@@ -4,7 +4,7 @@
 
 #include <ros/ros.h>
 #include <tf/tf.h>
-#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <visualization_msgs/Marker.h>
 #include <std_msgs/String.h>
 
@@ -19,7 +19,7 @@ public:
     ros::Subscriber marker_sub;
     uint32_t  shape;
 
-    void visualizerCallback(const geometry_msgs::Pose2D::ConstPtr& );
+    void visualizerCallback(const geometry_msgs::PoseStamped::ConstPtr& );
 
 
     BoatMarker(ros::NodeHandle nh)
@@ -73,20 +73,19 @@ public:
 
 };
 
-void BoatMarker::visualizerCallback(const geometry_msgs::Pose2D::ConstPtr& pose)
+void BoatMarker::visualizerCallback(const geometry_msgs::PoseStamped::ConstPtr& pose_msg)
 {
     // Time stamp
     marker.header.stamp = ros::Time::now();
 
     // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-    marker.pose.position.x = pose->x;
-    marker.pose.position.y = pose->y;
-    marker.pose.position.z = 0;
-    tf::Quaternion q = tf::createQuaternionFromYaw(pose->theta);
-    marker.pose.orientation.x = q.getX();
-    marker.pose.orientation.y = q.getY();
-    marker.pose.orientation.z = q.getZ();
-    marker.pose.orientation.w = q.getW();
+    marker.pose.position.x = pose_msg->pose.position.x;
+    marker.pose.position.y = pose_msg->pose.position.y;
+    marker.pose.position.z = pose_msg->pose.position.z;
+    marker.pose.orientation.x = pose_msg->pose.orientation.x;
+    marker.pose.orientation.y = pose_msg->pose.orientation.y;
+    marker.pose.orientation.z = pose_msg->pose.orientation.z;
+    marker.pose.orientation.w = pose_msg->pose.orientation.w;
 }
 
 
@@ -101,17 +100,6 @@ int main( int argc, char** argv )
     while (ros::ok())
     {
 
-        /* Publish the marker
-        while (bm.marker_pub.getNumSubscribers() < 1)
-        {
-            if (!ros::ok())
-            {
-                return 0;
-            }
-            ROS_WARN_ONCE("Please create a subscriber to the marker");
-            sleep(1);
-        }
-        */
         bm.Publish();
 
         ros::spinOnce();

@@ -2,21 +2,21 @@
 // Created by giuseppe on 05/06/18.
 //
 
-#include "ros/ros.h"
-#include "geometry_msgs/Pose2D.h"
-
 #include <iostream>
-#include "BoatModel.h"
-
-
 #include <sstream>
 
-class boatNode
+#include "ros/ros.h"
+#include "geometry_msgs/PoseStamped.h"
+#include "tf/tf.h"
+
+#include "BoatModel.h"
+#include "utils.h"
+
+class boatNode: public RosNode
 {
 public:
-    ros::NodeHandle boat_node_;
     ros::Publisher boat_pub;
-    geometry_msgs::Pose2D boat_pose;
+    geometry_msgs::PoseStamped boat_pose;
 
     /* Create object with 0 initial condition */
     State init_cond;
@@ -26,13 +26,14 @@ public:
     double longitudinal_drag, lateral_drag;
     double longitudinal_var, lateral_var;
     double max_thrust, max_rudder_angle;
+    double Ts;
     int thrust_input_type;
     int rudder_input_type;
 
     boatNode(ros::NodeHandle nh, std::string node_name)
     {
-        boat_node_ = nh;
-        boat_pub = boat_node_.advertise<geometry_msgs::Pose2D>("boat_position", 1000);
+        node_ = nh;
+        boat_pub = node_.advertise<geometry_msgs::PoseStamped>("boat_position", 1000);
 
         setParamWithVerb(node_name + "/boat_param/longitudinal_drag", longitudinal_drag);
         setParamWithVerb(node_name + "/boat_param/lateral_drag", lateral_drag);
@@ -42,6 +43,7 @@ public:
         setParamWithVerb(node_name + "/boat_param/max_rudder_angle", max_rudder_angle);
         setParamWithVerb(node_name + "/boat_param/thrust_input_type", thrust_input_type);
         setParamWithVerb(node_name + "/boat_param/rudder_input_type", rudder_input_type);
+        setParamWithVerb(node_name + "/sim_param/Ts", Ts);
 
         /* Set model params */
         State ic = State(5,0);
@@ -56,24 +58,35 @@ public:
         boat.setMaxRudder(max_rudder_angle);
     }
 
-    template <typename  T>
-    void setParamWithVerb(std::string param_name, T &var)
+    void publishPoseStamped()
     {
-        if(boat_node_.getParam(param_name, var))
-            std::cout << "Setting ["<< param_name << "] to " << var << std::endl;
-        else
-            std::cout << "Retrieval of [" << param_name << "] failed" << std::endl;
+
+        boat_pose.header.frame_id = "my_frame";
+        boat_pose.header.stamp = ros::Time::now();
+        boat_pose.header.seq = 0;
+
+        tf::Quaternion q = tf::createQuaternionFromYaw(boat.getPos(BoatStates::PHI));
+        boat_pose.pose.position.x = boat.getPos(BoatStates::X);
+        boat_pose.pose.position.y = boat.getPos(BoatStates::Y);
+        boat_pose.pose.position.z = 0.0;
+        boat_pose.pose.orientation.x = q.getX();
+        boat_pose.pose.orientation.y = q.getY();
+        boat_pose.pose.orientation.z = q.getZ();
+        boat_pose.pose.orientation.w = q.getW();
+
+        boat_pub.publish(boat_pose);
 
     }
+
 };
 
 int main(int argc, char **argv)
 {
     std::string node_name = "boat_talker";
-
     ros::init(argc, argv, node_name);
-
     ros::NodeHandle nh;
+
+    /* For realistic simulation run at a rate close to the sa*/
     ros::Rate loop_rate(50);
 
     boatNode bn(nh, node_name);
@@ -91,11 +104,7 @@ int main(int argc, char **argv)
         bn.boat.step(dt);
 
         // Advertise position
-        bn.boat_pose.x = bn.boat.getPos(BoatStates::X);
-        bn.boat_pose.y = bn.boat.getPos(BoatStates::Y);
-        bn.boat_pose.theta = bn.boat.getPos(BoatStates::PHI);
-
-        bn.boat_pub.publish(bn.boat_pose);
+        bn.publishPoseStamped();
 
         ros::spinOnce();
 
