@@ -8,9 +8,12 @@
 
 /* Printing callback when ode is solved */
 void Observer::operator()( const State &x , double t ) {
+
+    /* Save states in circular buffer */
     m_states.push_back(x);
     m_times.push_back(t);
 
+    /* Printing
     // Fix max number of decimals
     std::cout << std::setprecision(2) << std::fixed;
 
@@ -18,7 +21,8 @@ void Observer::operator()( const State &x , double t ) {
     for (size_t i = 0; i < x.size(); i++)
         std::cout << "x[" << i << "]=" << x[i] << " -- ";
     std::cout << "time=" << t << " s" << std::endl;
-}
+    */
+ }
 
 
 /* Constructor */

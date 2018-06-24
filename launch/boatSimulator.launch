@@ -1,11 +1,15 @@
 <launch>
-    <node pkg="ekf" type="boat_talker" name="boat_talker" output="screen">
+    <node pkg="ekf" type="simulation_node" name="simulation_node" output="screen">
         <rosparam command="load" file="$(find ekf)/config/config.yaml" />
     </node>
 
-    <node pkg="ekf" type="visualize_boat" name="visualize_boat" output="screen"/>
+    <node pkg="ekf" type="visualization_node" name="visualization_node" output="screen"/>
 
-    <node pkg="ekf" type="meas_talker" name="meas_talker" output="screen">
+    <node pkg="ekf" type="measurement_node" name="measurement_node" output="screen">
+        <rosparam command="load" file="$(find ekf)/config/config.yaml" />
+    </node>
+
+    <node pkg="ekf" type="controller_node" name="controller_node" output="screen">
         <rosparam command="load" file="$(find ekf)/config/config.yaml" />
     </node>
 

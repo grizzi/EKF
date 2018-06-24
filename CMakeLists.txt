@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   visualization_msgs
   geometry_msgs
+  ekf_messages
 
 )
 
@@ -107,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ekf
-  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs message_runtime visualization_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs message_runtime visualization_msgs ekf_messages
 #  DEPENDS system_lib
 )
 
@@ -120,8 +121,7 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
-    src/utils
-    src/simulator
+    src/utils src/simulator src/control
 )
 
 ## Declare a C++ library
@@ -139,24 +139,28 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/ekf_node.cpp)
 
-add_executable(boat_talker src/utils/utils.cpp
-                           src/boat_talker.cpp
+add_executable(simulation_node src/utils/utils.cpp
+        src/simulation_node.cpp
                            src/simulator/dynamics.cpp
                            src/simulator/BoatModel.cpp
                            )
 
-target_link_libraries(boat_talker ${catkin_LIBRARIES})
+target_link_libraries(simulation_node ${catkin_LIBRARIES})
 
-add_executable(visualize_boat src/visualize_boat.cpp)
-target_link_libraries(visualize_boat ${catkin_LIBRARIES})
+add_executable(visualization_node src/visualization_node.cpp)
+target_link_libraries(visualization_node ${catkin_LIBRARIES})
 
-add_executable(meas_talker src/meas_talker.cpp
+add_executable(measurement_node src/measurement_node.cpp
         src/utils/utils.cpp
         src/simulator/dynamics.cpp
         src/simulator/BoatModel.cpp)
                            #src/simulator/BoatMeasurements.cpp)
-target_link_libraries(meas_talker ${catkin_LIBRARIES})
+target_link_libraries(measurement_node ${catkin_LIBRARIES})
 
+add_executable(controller_node src/controller_node.cpp
+        src/utils/utils.cpp
+        )
+target_link_libraries(controller_node ${catkin_LIBRARIES})
 
 
 

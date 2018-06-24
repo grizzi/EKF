@@ -43,6 +43,25 @@ public:
 
 };
 
+// Uniform distribution class
+class UniformDistribution
+{
+    std::default_random_engine generator_;
+    std::uniform_real_distribution<> dist_;
+
+    double left_limit;
+    double right_limit;
+
+public:
+
+    UniformDistribution();
+
+    UniformDistribution(double, double);
+
+    double draw();
+
+};
+
 //Node class
 class RosNode {
 
@@ -66,5 +85,7 @@ public:
 
 
 double PoseStampedToYaw(const geometry_msgs::PoseStamped::ConstPtr &);
+
+double deg2rad(double);
 
 #endif //SIMULATOR_UTILS_H

@@ -28,13 +28,9 @@ class Boat: public Dynamics
     double Qd_ = 0.001;            // Longitudinal model noise variance
     double Qr_ = 0.001;            // Lateral model noise variance
 
-    /* Input param */
-    int u_t_type_ = 0;
-    int u_r_type_ = 0;
-    double A_ = 2.0;
-    double omega_ = 0.1;
-    double u_r_min_ = -2;
-    double u_r_max_ = 2;
+    /* Inputs */
+    double ur_;
+    double ut_;
 
     /* Model  noise */
     std::default_random_engine generator;
@@ -50,10 +46,6 @@ public:
     /*System ODEs*/
     void sys(const State &x, State &dxdt, double t) override;
 
-
-    /* Input generator */
-    double input(int type, const double &t);
-
     /* Set methods*/
     void setLongDrag(double &Cd);
 
@@ -63,13 +55,9 @@ public:
 
     void setLatNoiseVar(double &Qr);
 
-    void setThrustInputType(int type);
+    void setThrust(double &ut);
 
-    void setRudderInputType(int type);
-
-    void setMaxThrust(double &max_val);
-
-    void setMaxRudder(double &max_val);
+    void setRudder(double &ur);
 
 };
 

@@ -19,7 +19,7 @@ class BoatMeasurements
     std::array<double, 5> meas_;
 
     /* Drift */
-    double b_;
+    double b_ = 0.0;
 
     /* Params */
     // Variances
@@ -28,7 +28,8 @@ class BoatMeasurements
     double sigma_c;
     double sigma_g;
     double sigma_n;
-    double Qb_;             // drift dynamics noise variance
+    double Qb_;                   // drift dynamics noise variance
+    double loss_probability_c;    // not always measurement from c is available
 
     // Sensors location
     std::vector<double> pa_;
@@ -42,15 +43,16 @@ class BoatMeasurements
     NormalDistribution wg_;
     NormalDistribution wn_;
     NormalDistribution vb_;
+    UniformDistribution loss_uniform_;
 
 public:
 
     BoatMeasurements(){};
 
     BoatMeasurements(double s_a, double s_b, double s_c, double s_g, double s_n, double Qb,
-                     std::vector<double> pa, std::vector<double> pb, std::vector<double> pc)
+                     double loss_p, std::vector<double> pa, std::vector<double> pb, std::vector<double> pc)
     : sigma_a(s_a), sigma_b(s_b), sigma_c(s_c), sigma_g(s_g), sigma_n(s_n), Qb_(Qb),
-      pa_(pa), pb_(pb), pc_(pc)
+      loss_probability_c(loss_p), pa_(pa), pb_(pb), pc_(pc)
     {
         // Initialize distributions
         wa_ = NormalDistribution(0.0, sigma_a);
@@ -60,17 +62,29 @@ public:
         wn_ = NormalDistribution(0.0, sigma_n);
         vb_ = NormalDistribution(0.0, Qb_);
 
+        loss_uniform_ = UniformDistribution(0.0, 1.0);
+
     }
 
     void measure(const double &x, const double &y, const double &phi, const double dt)
     {
       // Advance drift dynamics
-      this->drift_ct_dynamics(dt);
-      t_ += dt;
+      if(dt > 0)
+      {
+          this->drift_ct_dynamics(dt);
+          t_ += dt;
+      }
 
       meas_[0] = sqrt(std::pow((x - pa_[0]), 2) + std::pow((y - pa_[1]), 2)) + wa_.draw();
       meas_[1] = sqrt(std::pow((x - pb_[0]), 2) + std::pow((y - pb_[1]), 2)) + wb_.draw();
-      meas_[2] = sqrt(std::pow((x - pc_[0]), 2) + std::pow((y - pc_[1]), 2)) + wc_.draw();
+
+      // Draw from uniform from 0 and 1 to eventually discard measurement from c
+      // Assign -1 as flag of missing data
+      if(loss_uniform_.draw() <= loss_probability_c)
+          meas_[2] = -1;
+      else
+          meas_[2] = sqrt(std::pow((x - pc_[0]), 2) + std::pow((y - pc_[1]), 2)) + wc_.draw();
+
       meas_[3] = phi + b_ + wg_.draw();
       meas_[4] = phi + wn_.draw();
 
