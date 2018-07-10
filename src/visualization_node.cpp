@@ -77,7 +77,7 @@ void BoatMarker::visualizerCallback(const geometry_msgs::PoseStamped::ConstPtr& 
 // Ros node loop
 int main( int argc, char** argv )
 {
-    ros::init(argc, argv, "basic_shapes");
+    ros::init(argc, argv, "visualization_node");
     ros::NodeHandle n;
     ros::Rate r(20);
     BoatMarker bm(n);

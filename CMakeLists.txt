@@ -14,11 +14,13 @@ find_package(catkin REQUIRED COMPONENTS
   visualization_msgs
   geometry_msgs
   ekf_messages
-
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+find_package(cmake_modules REQUIRED)                              # provides script for finding eigen
+find_package(Boost REQUIRED system filesystem date_time thread)
+# find_package(Eigen3 REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -106,11 +108,20 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES ekf
-  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs message_runtime visualization_msgs ekf_messages
-#  DEPENDS system_lib
+  CATKIN_DEPENDS
+        roscpp
+        rospy
+        std_msgs
+        geometry_msgs
+        message_runtime
+        visualization_msgs
+        ekf_messages
+  # DEPENDS
+  #      EIGEN3
 )
+
 
 ###########
 ## Build ##
@@ -118,11 +129,12 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
-    src/utils src/simulator src/control
-)
+include_directories(include)
+include_directories(${catkin_INCLUDE_DIRS})
+include_directories(src/utils src/simulator src/control src/estimator)
+include_directories(SYSTEM ${Boost_INCLUDE_DIR} $ENV{HOME}/lib/eigen)
+link_directories(${catkin_LIBRARY_DIRS})
+
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -162,7 +174,10 @@ add_executable(controller_node src/controller_node.cpp
         )
 target_link_libraries(controller_node ${catkin_LIBRARIES})
 
+add_executable(estimator_node src/estimator/HybridKalmanFilter.cpp
+        )
 
+target_link_libraries(estimator_node ${catkin_LIBRARIES})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

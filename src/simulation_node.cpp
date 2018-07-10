@@ -63,7 +63,7 @@ void SimulationNode::boatCallback(const ekf_messages::MeasAndControlStamped::Con
 // Ros loop
 int main(int argc, char **argv)
 {
-    std::string node_name = "boat_talker";
+    std::string node_name = "simulation_node";
     ros::init(argc, argv, node_name);
     ros::NodeHandle nh;
 
