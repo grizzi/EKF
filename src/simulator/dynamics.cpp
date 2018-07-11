@@ -92,4 +92,10 @@ void Dynamics::printSpeed(){
         std::cout << "dx/dt[" << i << "]=" << speed_[i] << std::endl;
 }
 
+Eigen::VectorXd Dynamics::getPosVec()
+{
+    double* ptr = &pos_[0];
+    return Eigen::Map<Eigen::VectorXd> (ptr, pos_.size());
+};
+
 

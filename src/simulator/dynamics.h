@@ -10,6 +10,7 @@
 #include <boost/numeric/odeint.hpp>
 #include <boost/circular_buffer.hpp>
 #include <cassert>
+#include <Eigen/Dense>
 #include "utils.h"
 
 using namespace std;
@@ -17,7 +18,6 @@ using namespace boost::numeric::odeint;
 
 
 typedef  std::vector<double> State;
-
 
 class Observer
 {
@@ -62,6 +62,8 @@ public:
 
     State getSpeed();
 
+    // Return state as an eigen dynamic vector
+    Eigen::VectorXd getPosVec();
 
     double getPos(int );            // Optional retrieval of a specific state
 

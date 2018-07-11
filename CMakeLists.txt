@@ -175,6 +175,7 @@ add_executable(controller_node src/controller_node.cpp
 target_link_libraries(controller_node ${catkin_LIBRARIES})
 
 add_executable(estimator_node src/estimator/HybridKalmanFilter.cpp
+        src/simulator/dynamics.cpp
         )
 
 target_link_libraries(estimator_node ${catkin_LIBRARIES})
