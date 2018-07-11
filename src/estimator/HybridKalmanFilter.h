@@ -46,8 +46,9 @@ private:
      * ut_prev_ - thrust input at time [k-1]
      * ur_prev_ - rudder input at time [k-1]
      */
-    double ut_prev_;
-    double ur_prev_;
+    // Initialize first input as 0,0
+    double ut_prev_{0.0};
+    double ur_prev_{0.0};
     VectorXd pred_meas_;
     /*
      * System parameters

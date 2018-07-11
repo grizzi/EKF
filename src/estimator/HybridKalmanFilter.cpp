@@ -201,8 +201,3 @@ void HKF::updateMatrices(bool got_station_c)
 
     }
 }
-
-int main()
-{
-    return 0;
-}
