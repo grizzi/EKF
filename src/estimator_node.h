@@ -8,6 +8,7 @@
 #include "ros/ros.h"
 
 #include "utils.h"
+#include "HybridKalmanFilter.h"
 
 #include "ekf_messages/MeasAndControlStamped.h"
 #include "ekf_messages/EstimateStamped.h"
@@ -19,6 +20,10 @@ private:
     ros::Subscriber est_sub_;                            // subscribe to the measurements and the control input
     double timer_;                                       // internal timer
     double Ts;                                           // publishing rate, same as simulation Ts
+
+    // Estimator
+    HKF Estimator_;
+    VectorXd measurement_vector;
 
     ekf_messages::MeasAndControlStamped est_input_;      // Sensor measurements and control inputs
     ekf_messages::EstimateStamped est_output_;           // Estimated state values and corresponding variance

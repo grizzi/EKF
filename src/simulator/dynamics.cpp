@@ -47,7 +47,6 @@ Dynamics::Dynamics(int dim, State &ic)
 
 /* Solve for delta_t the system dynamics */
 void Dynamics::step(double delta_t){
-
         /* Error-controlled RK  with adaptive step-size. */
         assert(delta_t >= 0.001);
         integrate( std::bind(&Dynamics::sys,std::ref(*this),std::placeholders::_1,
@@ -94,8 +93,11 @@ void Dynamics::printSpeed(){
 
 Eigen::VectorXd Dynamics::getPosVec()
 {
-    double* ptr = &pos_[0];
-    return Eigen::Map<Eigen::VectorXd> (ptr, pos_.size());
+    Eigen::VectorXd vec(dim_);
+    for(int i=0; i<dim_; i++)
+        vec(i)=pos_[i];
+    std::cout << vec << std::endl;
+    return vec;
 };
 
 

@@ -22,9 +22,9 @@ private:
      * num_meas        - dimension of the measurement [da, db, dc, giro, comp] NB.: dc not always available
      * num_proc_noise  - the noise components affecting the process dynamics
     */
-    const int num_states_ = 6;
-    const int num_meas_ = 5;
-    const int num_proc_noise_ = 3;
+    static const int num_states_ = 6;
+    static const int num_meas_ = 5;
+    static const int num_proc_noise_ = 3;
 
     /* Define the matrices and vector used by the Hybrid Kalman Filter
     P_  - Estimate covariance Matrix
@@ -47,8 +47,8 @@ private:
      * ur_prev_ - rudder input at time [k-1]
      */
     // Initialize first input as 0,0
-    double ut_prev_{0.0};
-    double ur_prev_{0.0};
+    double ut_prev_;
+    double ur_prev_;
     VectorXd pred_meas_;
     /*
      * System parameters
@@ -76,23 +76,26 @@ public:
     void init();
 
     /* Constructor - Initialize parameters, dynamics and matrices */
-    HKF(){};
+    HKF(): Dynamics(){};
 
     HKF(double Cd, double Cr, double R0, double phi0, double Qd,
         double Qr, double Qb, double xa, double ya, double xb, double yb,
         double xc, double yc, double va, double vb, double vc, double vg,
-        double vn, double Ts):
+        double vn, double Ts, State in_cond):
+            Dynamics(num_states_, in_cond),
             Cd_(Cd), Cr_(Cr), R0_(R0), phi0_(phi0), Qd_(Qd), Qr_(Qr), Qb_(Qb),
             xa_(xa), ya_(ya), xb_(xb), yb_(yb), xc_(xc), yc_(yc),
             va_(va), vb_(vb), vc_(vc), vg_(vg), vn_(vn), Ts_(Ts)
     {
+        ut_prev_ = 0.0;
+        ur_prev_ = 0.0;
+        //std::cout << "I am in the HKF initializator" << std::endl;
         // Initialize the dynamics;
-        State in_cond = std::vector<double>(num_states_, 0.0);
-        Dynamics(num_states_, in_cond);
 
         init();
+        //std::cout << "Matrices have been initialized" << std::endl;
         updateMatrices(true); // At the first step we do not have measurement, thus we are not interested in M,H
-
+        //std::cout << "Plugging the initial condition" << std::endl;
     };
 
 
@@ -106,7 +109,7 @@ public:
     void measure(bool flag);
 
     /* Prior update step */
-    void priorUpdate(double ut, double ur);
+    void priorUpdate();
 
     /* Posterior Update - Measurement conditioning */
     void posteriorUpdate(VectorXd &received_meas);
@@ -117,6 +120,15 @@ public:
     /* Update the Kalman gain around the new linearized dynamics */
     void updateKalman(bool flag);
 
+    /* Retrieve state */
+    double getState( int );
+
+    /* Retrieve state variance */
+    double getStateVar( int );
+
+    /* Set inputs for the process model update */
+    void setThrust(double);
+    void setRudder(double);
 };
 
 
